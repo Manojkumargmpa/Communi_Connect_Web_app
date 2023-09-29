@@ -42,7 +42,17 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.setAuthenticatedUser);
 
-
+app.get('/announcements/after/:date', async (req, res) => {
+  const { date } = req.params;
+console.log(date);
+console.log("made api req to after date");
+  try {
+      const announcements = await Announcements.find({ createdAt: { $gte: new Date(date) } });
+      res.json(announcements);
+  } catch (error) {
+      res.status(500).json({ error: 'An error occurred while fetching announcements' });
+  }
+});
 app.get("/auth-success", (req, res) => {
   const jsonDataEncoded = req.query.data;
   const jsonData = JSON.parse(decodeURIComponent(jsonDataEncoded));
