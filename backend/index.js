@@ -98,6 +98,7 @@ app.post('/api/announcements',async(req,res)=>{
   });
   await NewAnnouncement.save();
 })
+//router.post('/postimage',passport.checkAuthentication,usersController.update);
 
 
 app.get('/api/posts', async (req, res) => {
@@ -113,18 +114,46 @@ app.get('/api/posts', async (req, res) => {
       res.status(500).json({ error: 'An error while fetching posts.' });
     }
   });
-  
-  app.post('/api/posts',async(req,res)=>{
-    const {username,content}=req.body;
+  const multer=require('multer');
+  let storage = multer.diskStorage({
+    destination: function (req,file,cb) {
+        cb(null,'../frontend/src/images');
+    },
+    filename: function (req,file,cb) {
+        //file.fieldname is avatar
+        cb(null,file.fieldname + '-' +Date.now());
+    }
+});
+  const upload = multer({storage:storage});
+
+  app.post('/api/posts',upload.single("avatar"),async(req,res)=>{
+    const {formData}=req.body;
+    console.log("heyyyyy",req.file.filename);
+
     const NewPost=new Post({
-        username,
-        content
+        "username":req.body.username,
+        "content":req.body.content,
+        "avatar":req.file.filename,
+      
     
     });
-    await NewPost.save();
+    await NewPost.save() .then((savedDocument) => {
+      console.log('Document saved successfully:', savedDocument);
+    })
+    .catch((error) => {
+      console.error('Error saving document:', error);
+    });
+  
+  
+  
+  
+  
+  ;
   })
 
-
+  // app.post("/upload-image",upload.single("image"),async(req,res)=>{
+  //   res.send("uploaded");
+  // });
 
 
 
@@ -169,12 +198,12 @@ const create = async (req, res) => {
     }
   };
 
+/*
+createSession = async function (req, res) {
+    try {
+      // Step 1: Find the user
+      const user = await User.findOne({ email: req.body.email });
 
-// createSession = async function (req, res) {
-//     try {
-//       // Step 1: Find the user
-//       const user = await User.findOne({ email: req.body.email });
-        
 //       // Handle user not found
 //       if (!user) {
 //         //return res.redirect('back');
@@ -187,16 +216,18 @@ const create = async (req, res) => {
 //         //return res.redirect('back');
 //       }
   
-//       // Step 3: Handle session creation
-//       res.cookie('user_id', user.id);
-//     //   return res.redirect('/users/profile');
-//     console.log("heyy hiii");
-//     } catch (err) {
-//       console.log('Error in creating session:', err);
-//       return res.redirect('back');
-//     }
-//   };
-  
+
+      // Step 3: Handle session creation
+      res.cookie('user_id', user.id);
+    //   return res.redirect('/users/profile');
+    console.log("heyy hiii");
+    } catch (err) {
+      console.log('Error in creating session:', err);
+      return res.redirect('back');
+    }
+  };
+  */
+
 
 
   app.post('/create-session',passport.authenticate(

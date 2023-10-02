@@ -5,6 +5,7 @@ function Posts(){
     const [posts, setPosts] = useState([]);
     const [shouldFetch, setShouldFetch] = useState(true);
    const [isformUploading,setisformUploading]=useState(false);
+
     useEffect(() => {
       
         async function getPosts() {
@@ -25,6 +26,7 @@ function Posts(){
     getPosts();
         
       },[isformUploading]);
+
       useEffect(()=>{
         if(shouldFetch==false) setisformUploading(shouldFetch);
          },[shouldFetch]);
@@ -39,22 +41,47 @@ function Posts(){
 function NewAnnouncementForm({setShouldFetch,setisformUploading}) {
     const [user_name, setUsername] = useState('');
     const [contents, setPost] = useState('');
-    
+    const [image,setImage] = useState(null);
+
     function handleSubmit(e) {
         e.preventDefault();
-         // const NewAnnouncement = createNewAnnouncement();
-         async function posttoapi() {
-          //  console.log("New post created:");
-           // setAnnouncements((prevPosts) => [response.data, ...prevPosts]);
-             await axios.post("http://localhost:8004/api/posts", { username: user_name, content: contents });
+        const formData=new FormData();
+       
+        formData.append("username", user_name);
+        formData.append("content", contents);
+        formData.append("avatar",image);
+    
+     
+        async function posttoapi() {
+          try {
+           
             
-           // setShouldFetch(true);
+        
+            // Add other data to the formData object
+           
+            // Send the formData with the POST request
+            const response = await axios.post("http://localhost:8004/api/posts", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data for file uploads
+              },
+            });
+        
+            console.log("Response:", response.data);
+          } catch (error) {
+            console.error("Error:", error);
           }
+        }
+        
           setisformUploading(true);
           posttoapi();
          
       } 
+    function onimginputchange(e){
+      console.log(e.target.files[0]);
+      setImage(e.target.files[0]);
+      
 
+    };
     return (
 <form onSubmit={handleSubmit}>
 <div className="mb-3">
@@ -84,6 +111,8 @@ function NewAnnouncementForm({setShouldFetch,setisformUploading}) {
             onChange={(e) => setPost(e.target.value)}
         />
     </div>
+    <label htmlFor="avatar">Upload Image:</label>
+    <input type="file" name="avatar" placeholder='upload Image' onChange={onimginputchange} />
     <button type="submit" className="btn btn-success w-100 rounded-10">
         POST
     </button>
@@ -92,8 +121,6 @@ function NewAnnouncementForm({setShouldFetch,setisformUploading}) {
   }
 function ShowAnnouncements(props) {
     const announcementData = props.annData;
-
-   // console.log(announcementData);
     return (
       <div>
       <NewAnnouncementForm setShouldFetch={props.setShouldFetch} setisformUploading={props.setisformUploading}/>
@@ -102,7 +129,9 @@ function ShowAnnouncements(props) {
 
         {announcementData && announcementData.map((x) => (
           <li key={x._id}>
-            {x.content} - Created at {new Date(x.createdAt).toLocaleString()}
+            {x.content} - Created at {new Date(x.createdAt).toLocaleString()} 
+            -{ x.avatar && <img src={require(`./../images/${x.avatar}`)} alt="Avatar" height={700} width={700} /> }
+
           </li>
           
         ))}
