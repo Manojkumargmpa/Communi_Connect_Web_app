@@ -1,0 +1,285 @@
+.entireannc * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.body-annc {
+    /* background-color: #292524; */
+    color: #fafaf9;
+   
+    /* padding: 40px 64px; */
+    padding-top: 40px;
+    padding-bottom: 40px;
+    padding-left: 34px;
+    padding-right: 30px;
+    background: linear-gradient(300deg,#2E4374,#0b0113,#2E4374);
+  
+    background-size: 180% 180%;
+    /* this are more than 100% because it is intended for overflow */
+    animation:gradient-animation 10s ease-in infinite;     
+ 
+   
+}
+@keyframes gradient-animation {
+    0%{
+        background-position: 0% 50%;
+    }
+    50%{
+        background-position: 100% 50%;
+    }
+    100%{
+        background-position: 0% 50%;
+    }
+}
+.hidden-annc{
+    display: none !important;
+}
+.message-annc{
+    text-align:center;
+    text-transform: uppercase;
+    font-size: 32px;
+    font-weight: 600;
+    margin-top: 24px;
+
+}
+.entireannc {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.header-annc {
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+@media (max-width:535px){
+    .header-annc{
+        display: flex;
+        flex-direction: column;
+    }
+}
+.main-annc {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 28px;
+  
+    /* both the above lines are to make surethat aside section stays stationary even when the content increases */
+}
+@media (max-width:900px) {
+    .main-annc{
+        grid-template-columns: 1fr;
+    }
+}
+.logo-annc {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.logo-annc img {
+    border-radius: 50%;
+    width: 68px;
+    height: 68px;
+}
+
+.fact-form-annc {
+    background-color: #1b2739;
+    margin-bottom: 40px;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-radius: 16px;
+}
+
+
+ .body-annc h1 {
+    font-size: 42px;
+    line-height: 1;
+    margin-top: 8px;
+    text-transform: uppercase;
+    /* font-family: "Coiny", sans-serif; */
+   
+
+
+}
+
+.category-annc {
+    margin-bottom: 16px
+}
+
+.fact-annc {
+    font-size: 20px;
+    line-height: 1.4;
+    margin-bottom: 16px;
+    margin-right: 16px;
+    background-color: #1b2739;
+    /* letter-spacing: -1px; */
+    padding: 16px 30px;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    gap: 24px;
+    border-radius: 16px;
+    border-top-width: 2px;
+    border-style: groove;
+    border-color: #a1adc9;
+    font-weight: 400;
+  /* color: #0b0113; */
+}
+
+@media(min-width:1201px){
+
+    .fact-annc{
+        min-height: 100px;
+        margin-bottom: 50px;
+    }
+}
+@media (max-width:1200px){
+    .fact-annc{
+       flex-direction: column;
+       align-items: flex-start;
+       gap: 12px;
+    }
+}
+.vote-buttons-annc {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.vote-buttons-annc button {
+    background-color: #78716c;
+    border: none;
+    font-size: 18px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    /* borderradius is set to something big because after you set it to any value more than half of the width/height then it still be same */
+    color:inherit;
+    font-family: inherit;
+    font-weight: 400;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.vote-buttons-annc button:hover{
+    background-color: #292524;
+}
+.vote-buttons-annc button:hover{
+    background-color: #44403c;
+}
+.tag-annc {
+    text-transform: uppercase;
+    font-size: 14px;
+    /* font-family: "Coiny", sans-serif; */
+    background-color: #3b82f6;
+    padding-top: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 10px;
+    font-weight: 10;
+}
+
+.categorylist {
+    list-style: none;
+   
+}
+.main-annc .facts-list-annc{
+height: 100vh;
+overflow: scroll;
+}
+
+/* .source:visited{
+    color:red;
+} */
+.source-annc:hover {
+    color: #3b82f6;
+}
+
+.source-annc:active {
+    color: green;
+}
+
+.btn-annc {
+    border: none;
+    font-family: "Coiny", sans-serif;
+    text-transform: uppercase;
+    font-size: 17px;
+    padding: 16px 0 13px;
+    background-color: #3b82f6;
+    /* background-image: linear-gradient(135deg, #3b82f6, #ef4444, #16a34a, #eab308); */
+    color: inherit;
+    transition: 0.3s;
+    border-radius: 15px;
+    cursor: pointer;
+    /* when hovered over button it turns to a handlikecursor */
+}
+
+.btn-annc:hover {
+    transform: scale(110%) rotate(-2deg);
+}
+
+.btn-large-annc {
+    font-size: 20px;
+    padding: 20px 32px 17px
+}
+
+.btn-all-categories-annc {
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.btn-category-annc {
+    width: 100%;
+    background-image: none;
+}
+.fact-form-annc input,.fact-form-annc select{
+ 
+    background-color: #1b2739;
+    border: none;
+    border-radius: 100px;
+    padding: 16px;
+    font-size: 18px;
+    color: white;
+    font-family: inherit;
+}
+.fact-form-annc input::placeholder{
+    color: #a8a29e;
+}
+.fact-form-annc input:first-child{
+flex-grow: 1;
+}
+.fact-form-annc span{
+    font-weight: 600;
+    font-size: 18px;
+    margin-right: 18px;
+}
+
+@media (max-width:1133px) {
+    .body-annc{
+        padding:32px 48px;
+    }
+    .fact-form-annc{
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .fact-form-annc input,.fact-form-annc select{
+        width: auto;
+    }
+}
+.date-picker-annc{
+    margin-top: 10px;
+    background-color: #1b2739;
+    color: white;
+}
+.datepicker-label-annc{
+    margin-top: 30px;
+   
+}
+.filter-submit-annc{
+    background-color: #1b2739;
+    color: white;
+    margin-top: 30px;
+}
