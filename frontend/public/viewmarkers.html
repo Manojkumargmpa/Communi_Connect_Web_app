@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mapbox 3D Globe Example</title>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js'></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css" type="text/css">
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+    <!-- Include Bootstrap CSS and JS -->
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        body { margin: 0; padding: 0; height:100%; }
+        #map { position: absolute;  top: 0;
+               bottom: 0;
+               left: 0;
+               right: 0; width: 100%; height: 100%; }
+        #geocoder { position: absolute; top: 10px; left: 10px; z-index: 1; background: rgba(255, 255, 255, 0.8); border-radius: 3px; padding: 5px; }
+        .marker-btn { position: absolute; top: 10px; right: 10px; z-index: 1; margin-right: 930px; margin-top: 5px; }
+        .current-location-btn { position: absolute; right: 10px; z-index: 1; top: 18px; margin-top: 0px; }
+        .media-upload-btn { position: absolute; right: 10px; z-index: 1; top: 60px }
+        .media-input { display: none; }
+    </style>
+</head>
+<body>
+    <div id='map'></div>
+    <div id='geocoder' class='geocoder'></div>
+   
+            
+        </div>
+    </div>
+    
+    <button class='btn btn-primary current-location-btn' id='currentLocationBtn'>See markers around you</button>
+
+    <script>
+      //  document.getElementById('markerMedia').value = 'hello.jpg';
+      var userPincode = prompt('Please enter your pincode:');
+      if (!userPincode) {
+            alert('Pincode is required. Please reload the page and enter your pincode.');
+        }      
+        mapboxgl.accessToken = 'pk.eyJ1Ijoic2hhbm11a2gwNTIyIiwiYSI6ImNsbXc0MnljbjBxcncya3F3c3E1dmYyMGYifQ.a_0SkZ7qha0Y8l7JBicNiA';
+
+        var hasInteracted = localStorage.getItem('hasInteracted');
+        if (!hasInteracted) {
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/outdoors-v12',
+                center: [78.9, 20.5],
+                zoom: 1,
+                pitch: 0,
+                bearing: 0,
+                hash: true,
+                transformRequest: (url, resourceType) => {
+                    if (resourceType === 'Tile' && url.endsWith('mvt')) {
+                        return {
+                            url: url.replace('https://', 'http://')
+                        };
+                    }
+                },
+                projection: 'globe' // Enable globe view
+            });
+
+            var geocoder = new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+            });
+
+            document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+            var addMarker = false;
+
+      
+
+            map.on('style.load', function () {
+                map.addSource('markers', {
+                    type: 'geojson',
+                    data: {
+                        type: 'FeatureCollection',
+                        features: []
+                    }
+                });
+
+                map.addLayer({
+                    id: 'markers',
+                    type: 'symbol',
+                    source: 'markers',
+                    layout: {
+                        'icon-image': 'circle-15',
+                        'icon-allow-overlap': true
+                    }
+                });
+
+              
+
+                // Set hasInteracted flag in local storage
+                localStorage.setItem('hasInteracted', 'true');
+
+                // Function to handle media upload
+              
+            });
+
+            document.getElementById('currentLocationBtn').addEventListener('click', function() {
+                if ('geolocation' in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                     // Success
+                    var userCoordinates = [position.coords.longitude, position.coords.latitude];
+                    map.flyTo({ center: userCoordinates, zoom: 14 });
+
+                     var userMarker = new mapboxgl.Marker({
+                     color: '#00FF00',
+                     scale: 1.2
+                })
+                .setLngLat(userCoordinates).addTo(map);
+             
+                        async function markingonmap(){
+                          
+                            const response = await axios.get('http://localhost:8004/api/getMarker', {
+        //   params: {
+        //    pincode:userPincode,
+        //   },
+        });
+   // console.log("after sending get req");
+    // catch(err){
+    //     console.log()
+    // }
+        var markerdata=response.data;
+        console.log(markerdata);
+        function calculateDistance(point1, point2) {
+                var lat1 = point1[1];
+                var lon1 = point1[0];
+                var lat2 = point2[1];
+                var lon2 = point2[0];
+
+                var R = 6371; // Radius of the Earth in km
+                var dLat = deg2rad(lat2 - lat1);
+                var dLon = deg2rad(lon2 - lon1);
+                var a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                var distance = R * c;
+                return distance;
+            }
+
+            // Convert degrees to radians
+            function deg2rad(deg) {
+                return deg * (Math.PI / 180);
+            }
+            function displayMarkers(markersData) {
+                markersData.forEach(marker => {
+                    // Check if the user's location is within the marker's radius
+                    var [userLongitude,userLatitude]=userCoordinates;
+                    var userLocation = [userLongitude, userLatitude]; // Set the user's location
+                    var markerLocation = [marker.longitude, marker.latitude]; // Marker's location
+
+                    var distance = calculateDistance(userLocation, markerLocation);
+
+                    // If the distance is within the marker's radius, add it to the map
+                    if (distance <= marker.radius) {
+                        var newFeature = {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [marker.latitude,marker.longitude]
+                            },
+                            properties: {
+                                description: marker.description,
+                                // media: mediaUrl
+                            }
+                        };
+                        map.getSource('markers').setData({
+                            type: 'FeatureCollection',
+                            features: map.getSource('markers')._data.features.concat(newFeature)
+                        });
+
+                        // Set the marker properties
+                        var marker = new mapboxgl.Marker({
+                            color: '#FF5733',
+                            scale: 0.6
+                        }).setLngLat([marker.latitude,marker.longitude])
+                          .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+                              .setHTML('<h3>' + marker.description +'</h3>'))
+                          .addTo(map);
+                    }
+                });
+            }
+            displayMarkers(markerdata);
+                   
+                    }
+                    markingonmap();
+}, function(error) {
+    // Error
+    console.error('Error getting current location:', error);
+    alert('Error getting current location. Please make sure location services are enabled.');
+});
+
+                } else {
+                    alert('Geolocation is not supported by your browser.');
+                }
+            });
+        } else {
+            // If user has interacted before, load map without globe projection
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/outdoors-v12',
+                center: [78.9629,20.5937],
+                zoom: 1,
+                pitch: 0,
+                bearing: 0,
+                hash: true,
+                transformRequest: (url, resourceType) => {
+                    if (resourceType === 'Tile' && url.endsWith('mvt')) {
+                        return {
+                            url: url.replace('https://', 'http://')
+                        };
+                    }
+                }
+            });
+
+            var geocoder = new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+            });
+
+            document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+            var addMarker = false;
+
+          
+
+            map.on('style.load', function () {
+                map.addSource('markers', {
+                    type: 'geojson',
+                    data: {
+                        type: 'FeatureCollection',
+                        features: []
+                    }
+                });
+
+                map.addLayer({
+                    id: 'markers',
+                    type: 'symbol',
+                    source: 'markers',
+                    layout: {
+                        'icon-image': 'circle-15',
+                        'icon-allow-overlap': true
+                    }
+                });
+
+             
+
+                // Set hasInteracted flag in local storage
+                localStorage.setItem('hasInteracted', 'true');
+
+           
+            });
+
+            document.getElementById('currentLocationBtn').addEventListener('click', function() {
+                if ('geolocation' in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+    // Success
+    var userCoordinates = [position.coords.longitude, position.coords.latitude];
+    map.flyTo({ center: userCoordinates, zoom: 14 });
+
+    var userMarker = new mapboxgl.Marker({
+        color: '#00FF00',
+        scale: 1.2
+    }).setLngLat(userCoordinates).addTo(map);
+    async function markingonmap(){
+                            const response = await axios.get('http://localhost:8004/api/getMarker');
+        var markerdata=response.data;
+        console.log(markerdata);
+        function calculateDistance(point1, point2) {
+                var lat1 = point1[1];
+                var lon1 = point1[0];
+                var lat2 = point2[1];
+                var lon2 = point2[0];
+
+                var R = 6371; // Radius of the Earth in km
+                var dLat = deg2rad(lat2 - lat1);
+                var dLon = deg2rad(lon2 - lon1);
+                var a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                var distance = R * c;
+                return distance;
+            }
+
+            // Convert degrees to radians
+            function deg2rad(deg) {
+                return deg * (Math.PI / 180);
+            }
+            function displayMarkers(markersData) {
+                markersData.forEach(marker => {
+                    // Check if the user's location is within the marker's radius
+                    var [userLongitude,userLatitude]=userCoordinates;
+                    var userLocation = [userLongitude, userLatitude]; // Set the user's location
+                    var markerLocation = [marker.longitude, marker.latitude]; // Marker's location
+
+                    var distance = calculateDistance(userLocation, markerLocation);
+               var markercoord=     {lng: marker.longitude, lat: marker.latitude};
+                    // If the distance is within the marker's radius, add it to the map
+                    // if (distance <= marker.radius) {
+                        var newFeature = {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: markercoord
+                            },
+                            properties: {
+                                description: marker.description,
+                                // media: mediaUrl
+                            }
+                        };
+                        // map.getSource('markers').setData({
+                        //     type: 'FeatureCollection',
+                        //     features: map.getSource('markers')._data.features.concat(newFeature)
+                        // });
+
+                        // Set the marker properties
+                        console.log("setting the markers",marker.description);
+                        var marker = new mapboxgl.Marker({
+                            color: '#FF5733',
+                            scale: 0.6
+                        }).setLngLat(markercoord)
+                          .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+                              .setHTML('<h3>' + marker.description +'</h3>'))
+                          .addTo(map);
+                    // }
+                });
+            }
+            displayMarkers(markerdata);
+                   
+                    }
+                    markingonmap();
+}, function(error) {
+    // Error
+    console.error('Error getting current location:', error);
+    alert('Error getting current location. Please make sure location services are enabled.');
+});
+
+                } else {
+                    alert('Geolocation is not supported by your browser.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

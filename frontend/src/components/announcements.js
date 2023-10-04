@@ -55,7 +55,7 @@ console.log(selectedfilterdate);
           return createdAtDate >= filterDate;
         });
 
-        setselectedfilterdate('');
+       // setselectedfilterdate('');
       }
         setAnnouncements(respdata); // Update state with response data
       } catch (error) {
@@ -66,7 +66,7 @@ console.log(selectedfilterdate);
     }
 
     getAnnouncements();
-  }, [isformUploading,currentcategory]);
+  }, [isformUploading,currentcategory,selectedfilterdate]);
   useEffect(()=>{
  if(isLoading==false) setIsformUploading(isLoading);
   },[isLoading])

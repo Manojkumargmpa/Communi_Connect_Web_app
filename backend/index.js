@@ -18,7 +18,7 @@ app.use(cookieParser());
 const User = require("./models/user");
 const Announcements=require("./models/announcements");
 const Post=require("./models/posts");
-
+const Markers=require("./models/maps");
 app.use(cors());
 app.use(session({
     name:'codeial',
@@ -82,7 +82,7 @@ app.get('/api/announcements', async (req, res) => {
     const query = {};
     const facts = await Announcements.find(query);
 //console.log(facts);
-console.log("logging facts");
+// console.log("logging facts");
     res.json(facts);
   } catch (error) {
     console.error('Error fetching announcements:', error);
@@ -98,8 +98,36 @@ app.post('/api/announcements',async(req,res)=>{
   });
   await NewAnnouncement.save();
 })
-//router.post('/postimage',passport.checkAuthentication,usersController.update);
+app.post('/api/addMarker',async(req,res)=>{
+  const {description,latitude,longitude,radius,pincode}=req.body;
+  const newMarker=new Markers({
+    description,
+    latitude,
+    longitude,
+    radius,
+    pincode
+  })
+  //console.log("description ",descritpion);
+  console.log("in posting marker",req.body);
 
+  await newMarker.save();
+})
+//router.post('/postimage',passport.checkAuthentication,usersController.update);
+app.get('/api/getMarker', async (req, res) => {
+  try {
+    console.log("received get marker request");
+    const pincode = req.query.pincode;
+    let query = {pincode};
+  
+
+    const facts = await Markers.find({});
+    console.log(facts);
+    res.json(facts);
+  } catch (error) {
+    console.error('Error fetching facts:', error);
+  
+  }
+});
 
 app.get('/api/posts', async (req, res) => {
     try {

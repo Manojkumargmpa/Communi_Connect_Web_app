@@ -4,7 +4,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/communi', {
     useNewUrlParser: true,
   });
 */
-mongoose.connect('mongodb+srv://tejeswarreddysunkugari03:dbatlas200339@cluster0.lkcuxyy.mongodb.net/communiconnectwebapp');
+mongoose.connect('');
 
 
 

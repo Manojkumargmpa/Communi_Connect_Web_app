@@ -9,6 +9,7 @@ import Home from './pages/home';
 import Chats from './components/chats';
 import Maps from './components/maps';
 import Posts from './components/posts';
+import Viewmarkers from './components/viewmarkers'
 import Announcements from './components/announcements';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path= "/home" element={<Home />} />
         <Route path="/chats" element={<Chats />} />
         <Route path="/maps" element={<Maps />} />
+        <Route path="/viewmarkers" element={<Viewmarkers />} />
         <Route path="/posts" element={<Posts />} />
         <Route path="/announcements" element={<Announcements />} />
       </Routes>

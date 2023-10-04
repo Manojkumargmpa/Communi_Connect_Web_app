@@ -9,10 +9,13 @@
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css" type="text/css">
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
     <!-- Include Bootstrap CSS and JS -->
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <style>
         body { margin: 0; padding: 0; height:100%; }
         #map { position: absolute;  top: 0;
@@ -48,6 +51,14 @@
                         <div class="form-group">
                             <label for="markerMedia">Media</label>
                             <input type="file" class="form-control" id="markerMedia" accept="image/*,video/*" >
+                        </div>
+                        <div class="form-group">
+                            <label for="markerradius">Radius</label>
+                            <input type="number" class="form-control" id="markerradius" value="" >
+                        </div>
+                        <div class="form-group">
+                            <label for="markerpincode">Pincode</label>
+                            <input type="text" class="form-control" id="markerpincode" value="" >
                         </div>
                     </form>
                 </div>
@@ -123,13 +134,16 @@
                 map.on('click', function (e) {
                     if (addMarker) {
                         var coordinates = e.lngLat;
+
                         $('#markerModal').modal('show');
                         $('#saveMarker').on('click', function () {
                             var description = $('#markerDescription').val();
                             var mediaInput = $('#markerMedia')[0];
+                            var radius=$('#markerradius').val();
+                            var pincode=$('#markerpincode').val();
                             var files = mediaInput.files;
-                            if (description || (files && files.length > 0)) {
-                                handleMediaUpload(files, coordinates, description);
+                            if (description && (files && files.length > 0)&&radius!=null && pincode.length>0) {
+                                handleMediaUpload(files, coordinates, description,radius,pincode);
                                 $('#markerModal').modal('hide');
                             } else {
                                 alert('Please provide a description or upload media.');
@@ -153,11 +167,29 @@
                 localStorage.setItem('hasInteracted', 'true');
 
                 // Function to handle media upload
-                function handleMediaUpload(files, coordinates, description) {
+                function handleMediaUpload(files, coordinates, description,radius,pincode) {
                     var file = files[0];
                     var reader = new FileReader();
                     reader.onload = function(e) {
                         var mediaUrl = e.target.result;
+                        var markerData = {
+                            description: description,
+                            latitude: coordinates.lat,
+                            longitude: coordinates.lng,
+                            pincode:pincode,
+                            // mediaUrl: mediaUrl,
+                            radius: radius,
+                        };
+                        async function postmarkertopapi() {
+                            try {
+                                await axios.post('http://localhost:8004/api/addMarker', markerData);
+                            }
+                            catch (err) {
+                                console.log("error adding marker to db", err);
+                            }
+
+                        }
+                        postmarkertopapi();
                         var newFeature = {
                             type: 'Feature',
                             geometry: {
@@ -267,13 +299,17 @@
                 map.on('click', function (e) {
                     if (addMarker) {
                         var coordinates = e.lngLat;
+                        console.log("typeof",typeof(coordinates));
+                        console.log(coordinates);
                         $('#markerModal').modal('show');
                         $('#saveMarker').on('click', function () {
                             var description = $('#markerDescription').val();
                             var mediaInput = $('#markerMedia')[0];
+                            var radius=$('#markerradius').val();
+                            var pincode=$('#markerpincode').val();
                             var files = mediaInput.files;
-                            if (description || (files && files.length > 0)) {
-                                handleMediaUpload(files, coordinates, description);
+                            if (description || (files && files.length > 0)&&radius!=null && pincode.length>0) {
+                                handleMediaUpload(files, coordinates, description,radius,pincode);
                                 $('#markerModal').modal('hide');
                             } else {
                                 alert('Please provide a description or upload media.');
@@ -297,11 +333,29 @@
                 localStorage.setItem('hasInteracted', 'true');
 
                 // Function to handle media upload
-                function handleMediaUpload(files, coordinates, description) {
+                function handleMediaUpload(files, coordinates, description,radius,pincode) {
                     var file = files[0];
                     var reader = new FileReader();
                     reader.onload = function(e) {
                         var mediaUrl = e.target.result;
+                        var markerData = {
+                            description: description,
+                            latitude: coordinates.lat,
+                            longitude: coordinates.lng,
+                            pincode:pincode,
+                            // mediaUrl: mediaUrl,
+                            radius: radius,
+                        };
+                        async function postmarkertopapi() {
+                            try {
+                                await axios.post('http://localhost:8004/api/addMarker', markerData);
+                            }
+                            catch (err) {
+                                console.log("error adding marker to db", err);
+                            }
+
+                        }
+                        postmarkertopapi();
                         var newFeature = {
                             type: 'Feature',
                             geometry: {
