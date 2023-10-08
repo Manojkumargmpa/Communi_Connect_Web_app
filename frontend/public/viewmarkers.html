@@ -310,7 +310,7 @@
                     var distance = calculateDistance(userLocation, markerLocation);
                var markercoord=     {lng: marker.longitude, lat: marker.latitude};
                     // If the distance is within the marker's radius, add it to the map
-                    // if (distance <= marker.radius) {
+                     if (distance <= marker.radius) {
                         var newFeature = {
                             type: 'Feature',
                             geometry: {
@@ -336,7 +336,7 @@
                           .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
                               .setHTML('<h3>' + marker.description +'</h3>'))
                           .addTo(map);
-                    // }
+                    }
                 });
             }
             displayMarkers(markerdata);

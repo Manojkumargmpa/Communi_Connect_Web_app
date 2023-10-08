@@ -12,7 +12,6 @@ function Announcements() {
   const [selectedfilterdate,setselectedfilterdate]=useState('');
   const location = useLocation();
   const userstate = location.state;
-  
   const userdata=userstate.userData;
 
   useEffect(() => {
@@ -22,6 +21,7 @@ function Announcements() {
       try {
         const response = await axios.get('http://localhost:8004/api/announcements', {});
         var respdata=response.data;
+        respdata=respdata.filter((user)=>user.pincode===userdata.pincode)
        if(currentcategory!='sortbydate'){ respdata.sort((a, b) => {
           // Convert the createdAt values to Date objects for comparison
           const dateA = new Date(a.createdAt);
@@ -31,7 +31,7 @@ function Announcements() {
           return dateB - dateA;
         });
       }
-      if(currentcategory=='today'){
+      if(currentcategory==='today'){
         const currentDate = new Date();
 
 // Filter the announcements created today
@@ -48,7 +48,7 @@ function Announcements() {
 
       }
       if(currentcategory==='aftercertain date'){
-console.log(selectedfilterdate);
+//console.log(selectedfilterdate);
         const filterDate = new Date(selectedfilterdate);
         respdata = respdata.filter((announcement) => {
           const createdAtDate = new Date(announcement.createdAt);
@@ -68,7 +68,7 @@ console.log(selectedfilterdate);
     getAnnouncements();
   }, [isformUploading,currentcategory,selectedfilterdate]);
   useEffect(()=>{
- if(isLoading==false) setIsformUploading(isLoading);
+ if(isLoading===false) setIsformUploading(isLoading);
   },[isLoading])
 
   return (
@@ -76,7 +76,7 @@ console.log(selectedfilterdate);
     <div className='body-annc'>
       {/* <h1>userdata in announcement is {userdata.email}</h1> */}
       <Header showform={showform} setshowform={setshowform} />
-      {showform?(<NewAnnouncementForm setAnnouncements={setAnnouncements} setshowform={setshowform} setIsLoading={setIsLoading} setIsformUploading={setIsformUploading}/>):null}
+      {showform?(<NewAnnouncementForm setAnnouncements={setAnnouncements} userdata={userdata} setshowform={setshowform} setIsLoading={setIsLoading} setIsformUploading={setIsformUploading}/>):null}
       <main className='main-annc'>
 
         <CategoryFilter setcurrentcategory={setcurrentcategory} setshowfilterform={setshowfilterform} showfilterform={showfilterform} setselectedfilterdate={setselectedfilterdate}/>
@@ -112,7 +112,7 @@ const CATEGORIES = [
  
 ];
 
-function NewAnnouncementForm({ setAnnouncements,setIsLoading,setIsformUploading}) {
+function NewAnnouncementForm({ setAnnouncements,setIsLoading,setIsformUploading,userdata}) {
   const [text, setText] = useState('');
  
   
@@ -142,8 +142,9 @@ function NewAnnouncementForm({ setAnnouncements,setIsLoading,setIsformUploading}
       const NewAnnouncement = createNewAnnouncement();
 
      async function posttoapi() {
+     // console.log("sending post req to announcements");
+     await axios.post("http://localhost:8004/api/announcements", { announcement: text, pincode: userdata.pincode });
 
-        await axios.post("http://localhost:8004/api/announcements", { announcement: text, pincode: 456 });
       }
       posttoapi();
      setIsformUploading(true);
